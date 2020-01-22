@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "32651962504",
+    "firebase_url": "https://scouting1155-6723f.firebaseio.com",
+    "project_id": "scouting1155-6723f",
+    "storage_bucket": "scouting1155-6723f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:32651962504:android:9a04ef2b97223e1856173d",
+        "android_client_info": {
+          "package_name": "com.example.scout_attempt1155"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "32651962504-5rkpaug30evanf31afodtjd705q37vv9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD6jjDwepNheskhqtTu6CexcWs5d3IDEfI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "32651962504-5rkpaug30evanf31afodtjd705q37vv9.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "32651962504-6ojvdp49ql7sfip8532946hesofqpohl.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.superscouting1155"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -139,15 +139,17 @@ class PitScoutingTeamState extends State<PitScoutingTeamPage>
         print("uploading");
 
         File nameFile = await _getNameFile();
-
+        
         String name = nameFile.readAsStringSync();
 
+        //widget.allData.putIfAbsent("name", () => [name]);
+        // if(widget.allData["name"]==name)
 
         Firestore.instance
             .collection("teams")
             .document(widget.teamNumber)
             .collection("pitScouts")
-            .document(name)
+            .document(path)
             .setData({
           "allData": widget.allData,
         });

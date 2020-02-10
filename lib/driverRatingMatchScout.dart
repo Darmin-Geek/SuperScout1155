@@ -1,13 +1,6 @@
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'dart:io';
-import 'package:path_provider/path_provider.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:image_picker/image_picker.dart';
+
 
 import 'main.dart';
 
@@ -39,6 +32,7 @@ class DriverRatePageState extends State<DriverRatePage>{
         child: Column(
           children: <Widget>[
             Text("Speed"),
+            //DropdownButon is a widget that has buttons called DrowdownMenuItem
             DropdownButton(
               items: [
                 DropdownMenuItem(
@@ -54,6 +48,7 @@ class DriverRatePageState extends State<DriverRatePage>{
                   child: Text("Fast"),
                 ),
               ],
+              //values are not changed on their own. onChanged property is needed
               onChanged: (value){
                 setState(() {
                   widget.allData["speedScore"]=value;
@@ -70,9 +65,9 @@ class DriverRatePageState extends State<DriverRatePage>{
                   child: Text("No defense"),
                 ),
                 DropdownMenuItem(value: "blockedFewBalls",
-                child: Text("Blocked a few balls"),),
+                child: Text("Blocked a few shots"),),
                 DropdownMenuItem(value: "blockedManyBalls",
-                child: Text("Blocked many balls")),
+                child: Text("Blocked many shots")),
                 DropdownMenuItem(value: "onlyCanDoDefenseAndPoorly",
                 child: Text("incompetent defense bot"),),
                 DropdownMenuItem(value: "onlyCanDoDefenseAndWell",

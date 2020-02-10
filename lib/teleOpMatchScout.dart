@@ -1,13 +1,9 @@
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:image_picker/image_picker.dart';
+
 
 import 'main.dart';
 
@@ -59,7 +55,7 @@ String name = file.readAsStringSync();
   List<Widget> pageList = [];
 
   List<String> qualitiesInt = ["low goal scored", "high goal scored", "back hole scored"];
-  List<String> qualitiesYesNo = ["Rotation Control","Position Control","Hang","Hang balenced"];
+  List<String> qualitiesYesNo = ["Rotation Control","Position Control","Hang","Hang balenced", "any violations","won game"];
 
   Future<List<Widget>> createThePage(List<String> qualitiesInt, List<String> qualitiesYesNo)async{
   
@@ -144,9 +140,7 @@ String name = file.readAsStringSync();
              onPressed: ()async{
              
             
-               //setState(() {
-                 //print("called");
-                // randomTestPart=-1;
+               
                   widget.allData.update(qualitiesYesNo[i], (dynamic value)=>"No");
                   
                   pageList.addAll(await createThePage(qualitiesInt,qualitiesYesNo));
@@ -204,224 +198,9 @@ String name = file.readAsStringSync();
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
-        child: Column(
+        child: ListView(
           children: pageList
-          /*  InkWell(child: Text("Load Page",),
-            onTap: ()async{
-              teamNum=widget.teamNum;
-             print(teamNum);
-             setState(() {
-               
-             });
-            },),
-          if(teamNum>0)
-         Column(children: <Widget>[ Text("Scouting team #"+teamNum.toString()),
-         Text("Low goal: Scored power cells"),
-         Row(children: <Widget>[
-           FlatButton(
-             child: Text("+1"),
-             onPressed: (){
-               widget.teleOpLowGoal++;
-               print(widget.teleOpLowGoal);
-               setState(() {
-                 
-               });
-             },
-           ),
-           FlatButton(
-             child: Text("-1"),
-             onPressed: (){
-               widget.teleOpLowGoal--;
-               print(widget.teleOpLowGoal);
-               setState(() {
-                 
-               });
-             },
-           ),
-           
-           Text(widget.teleOpLowGoal.toString()),
-           ]),
-
-           Text("High goal: Scored power cells"),
-         Row(children: <Widget>[
-           FlatButton(
-             child: Text("+1"),
-             onPressed: (){
-               widget.teleOpHighGoal++;
-               print(widget.teleOpHighGoal);
-               setState(() {
-                 
-               });
-             },
-           ),
-           FlatButton(
-             child: Text("-1"),
-             onPressed: (){
-               widget.teleOpHighGoal--;
-               print(widget.teleOpHighGoal);
-               setState(() {
-                 
-               });
-             },
-           ),
-           Text(widget.teleOpHighGoal.toString())
-       
-         
-           
-
-
-          
-         ]),
-             Text("Back hole: Scored power cells"),
-         Row(children: <Widget>[
-           FlatButton(
-             child: Text("+1"),
-             onPressed: (){
-               widget.teleOpBackHole++;
-               print(widget.teleOpBackHole);
-               setState(() {
-                 
-               });
-             },
-           ),
-           FlatButton(
-             child: Text("-1"),
-             onPressed: (){
-               widget.teleOpBackHole--;
-               print(widget.teleOpBackHole);
-               setState(() {
-                 
-               });
-             },
-           ),
-           Text(widget.teleOpBackHole.toString())
-         ]),
-         Text("Rotation Control"),
-         Row(children: <Widget>[
-           FlatButton(
-             child: Text("Yes"),
-             onPressed: (){
-               widget.rotationControl = true;
-               print(widget.rotationControl);
-               setState(() {
-                 
-               });
-             },
-           ),
-           FlatButton(
-             child: Text("No"),
-             onPressed: (){
-               widget.rotationControl=false;
-               print(widget.rotationControl);
-               setState(() {
-                 
-               });
-             },
-           ),
-           Text(widget.rotationControl.toString())
-         ]),
-         Text("Position Control"),
-         Row(children: <Widget>[
-           FlatButton(
-             child: Text("Yes"),
-             onPressed: (){
-               widget.positionControl = true;
-               print(widget.positionControl);
-               setState(() {
-                 
-               });
-             },
-           ),
-           FlatButton(
-             child: Text("No"),
-             onPressed: (){
-               widget.positionControl=false;
-               print(widget.positionControl);
-               setState(() {
-                 
-               });
-             },
-           ),
-           Text(widget.positionControl.toString())
-         ]),
-         // Method: does all of this. Takes: name, options
-         // options should be a list of strings
-
-         // ex: method("Hand",["Yes"; "No"])
-         Text("Hang"),
-         Row(children: <Widget>[
-           FlatButton(
-             child: Text("Yes"),
-             onPressed: (){
-               widget.hang = true;
-               print(widget.hang);
-               setState(() {
-                 
-               });
-             },
-           ),
-           FlatButton(
-             child: Text("No"),
-             onPressed: (){
-               widget.hang = false;
-               print(widget.hang);
-               setState(() {
-                 
-               });
-             },
-           ),
-           Text(widget.hang.toString())
-         ]),
-         Text("Position Control"),
-         Row(children: <Widget>[
-           FlatButton(
-             child: Text("Yes"),
-             onPressed: (){
-               widget.positionControl = true;
-               print(widget.positionControl);
-               setState(() {
-                 
-               });
-             },
-           ),
-           FlatButton(
-             child: Text("No"),
-             onPressed: (){
-               widget.positionControl=false;
-               print(widget.positionControl);
-               setState(() {
-                 
-               });
-             },
-           ),
-           Text(widget.positionControl.toString())
-         ]),
-        InkWell(child: Text("Back",textScaleFactor: 3,),
-        onTap: (){goToAutoMatchScout(context, widget.allData);
-        InkWell(child: Text("Submit"),
-        onTap: (){
-          Firestore.instance.collection("teams").document(widget.teamNum.toString()).collection("matchScouts").document(widget.matchNum.toString()).setData({
-            "teamNum":widget.teamNum,
-            "matchNum":widget.matchNum,
-            "autoLowGoal":widget.autoLowGoal,
-            "autoHighGoal":widget.autoHighGoal,
-            "autoBackHole":widget.autoBackHole,
-            "moved":widget.moved,
-            "teleOpLowGoal":widget.teleOpLowGoal,
-            "teleOpHighGoal":widget.teleOpHighGoal,
-            "teleOpBackHole":widget.teleOpBackHole,
-            "rotationControl":widget.rotationControl,
-            "postionControl":widget.positionControl,
-            "hang":widget.hang,
-            "hangBalenced":widget.hangBalenced
-            
-
-
-          }           
-          );
-        },);
-        })])
-        */)));
+          )));
         
 }
 

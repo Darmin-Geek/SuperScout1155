@@ -1,212 +1,185 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:image_picker/image_picker.dart';
 
 import 'main.dart';
 
 Future<File> _getNameFile() async {
-      // get the path to the document directory.
+  // get the path to the document directory.
+  String dir = (await getApplicationDocumentsDirectory()).path;
+  print(dir);
+  File currentFile = File('$dir/Name.txt');
+  print(currentFile);
 
-      String dir = (await getApplicationDocumentsDirectory()).path;
-      print(dir);
-      File currentFile = File('$dir/Name.txt');
-      print(currentFile);
-      
-      File newFile = await currentFile.create();
-      return newFile;
-    }
-
-class AutoMatchScoutState extends State<AutoMatchScout>{
-/*
-
-  mcq1 = ["Hang","Yes","No"]
-  mcq2 = ["Balanced", "Yes", "No"]
-  mcQuestions = [q1, q2]
-
-  incDecq1 = ["Power Cells Scored", 0]
-  incDecq2 = ["Number of fouls", 0]
-  incDecFeilds = [incDecq1, incDecq2]
-
-  createPage(mcQuestions, incDecFields) -> pageList
-
-  */
-  List<Widget> pageList = [];
-  
-  int randomTestPart = 0;
-  List<String> intQuestions =["Starting power cells","Low goal scored (A)","High goal scored (A)","Back hole scored (A)"];
-  List<String> yesNoQuestions = ["Moved"];
-
-  bool shownTeleOpButton = false;
- Future<List<Widget>> createThePage(List<String> qualitiesInt, List<String> qualitiesYesNo)async{
-  
-    List<int> teamNameAndNum = await getTeamClosestTimeTeam();
-    List<Widget> thePageValue = [];
-    thePageValue.add(Text(teamNameAndNum[0].toString()));
-    thePageValue.add(Text("Match Num"+teamNameAndNum[1].toString()));
-    for(int i = 0; i<qualitiesInt.length;i++){
-      thePageValue.add(Text(qualitiesInt[i]));
-      widget.allData.putIfAbsent(qualitiesInt[i], ()=>
-       0
-      );
-
-      thePageValue.add(Row(children: <Widget>[
-           FlatButton(
-             child: Text("+1"),
-             onPressed: ()async{
-               print(widget.allData);
-               
-               print(widget.allData[qualitiesInt[i]]);
-               widget.allData.update(qualitiesInt[i], (dynamic value)=>value+1);
-                  
-                  pageList.addAll(await createThePage(qualitiesInt,qualitiesYesNo));
-                  print(pageList);
-                  pageList.removeRange(0, qualitiesInt.length*2+4+qualitiesYesNo.length*2);
-                  print(pageList);
-                  setState(() {
-                    
-                  });
-
-             },
-           ),
-           FlatButton(
-             child: Text("-1"),
-             onPressed: ()async{
-             
-            
-               //setState(() {
-                 //print("called");
-                // randomTestPart=-1;
-                  widget.allData.update(qualitiesInt[i], (dynamic value)=>value-1);
-                  
-                  pageList.addAll(await createThePage(qualitiesInt,qualitiesYesNo));
-                  print(pageList);
-                  pageList.removeRange(0, qualitiesInt.length*2+4+qualitiesYesNo.length*2);
-                  print(pageList);
-                  setState(() {
-                    
-                  });
-              // });
-             },
-           ),
-           
-           Text(widget.allData[qualitiesInt[i]].toString()),
-           ]));
-    }
-
-     for(int i = 0; i<qualitiesYesNo.length;i++){
-      thePageValue.add(Text(qualitiesYesNo[i]));
-      widget.allData.putIfAbsent(qualitiesYesNo[i], ()=>
-       "No"
-      );
-
-      thePageValue.add(Row(children: <Widget>[
-           FlatButton(
-             child: Text("Yes"),
-             onPressed: ()async{
-               
-               widget.allData.update(qualitiesYesNo[i], (dynamic value)=>"Yes");
-                  
-                  pageList.addAll(await createThePage(qualitiesInt,qualitiesYesNo));
-                  print(pageList);
-                  pageList.removeRange(0, qualitiesInt.length*2+4+qualitiesYesNo.length*2);
-                  print(pageList);
-                  setState(() {
-                    
-                  });
-
-             },
-           ),
-           FlatButton(
-             child: Text("No"),
-             onPressed: ()async{
-             
-            
-                  widget.allData.update(qualitiesYesNo[i], (dynamic value)=>"No");
-                  
-                  pageList.addAll(await createThePage(qualitiesInt,qualitiesYesNo));
-                  print(pageList);
-                  pageList.removeRange(0, qualitiesInt.length*2+4+qualitiesYesNo.length*2);
-                  print(pageList);
-                  setState(() {
-                    
-                  });
-
-             },
-           ),
-           
-           Text(widget.allData[qualitiesYesNo[i]].toString()),
-           ]));
-    }
-          thePageValue.add(
-        InkWell(child: Text("Go To TeleOp Scout",textScaleFactor: 3,),
-         onTap: (){
-          goToTeleOpMatchScout(context, widget.allData);
-         },),
-      );
-      thePageValue.add(
-        InkWell(child: Text("Go To Main Menu",textScaleFactor: 3,),
-         onTap: (){
-          goToMainMenu(context);
-         },),
-      );
-      
-      
-    
-    return thePageValue;
-  }
-  Future<List<int>> getTeamClosestTimeTeam() async{
-
-
-  File file = await _getNameFile();
-String name = file.readAsStringSync();
-  print(name);
-  DateTime currentTime = new DateTime.now();
-  var matchesPlace = await  Firestore.instance.collection("matches").orderBy("matchNum").getDocuments();
-   for(DocumentSnapshot match in matchesPlace.documents){
-    var teams = await match.reference.collection("teams").getDocuments();
-    for(DocumentSnapshot team in teams.documents){
-     // var matchTime = 
-      
-      //if(team["scouter"]==name && (match["matchPredictedTime"]*1000)>currentTime.millisecondsSinceEpoch){
-      DateTime dataMatchTime = DateTime.fromMillisecondsSinceEpoch(match["matchPredictedTime"]*1000).toLocal();
-        if(team["scouter"]==name && currentTime.isBefore(dataMatchTime)){
-        print(DateTime.fromMillisecondsSinceEpoch(match["matchPredictedTime"]*1000).toLocal());
-        print(DateTime.now());
-        print(team.documentID);
-        print(match.documentID);
-        print("\n");
-        List<int> toReturn = [int.parse(team.documentID.substring(3)),int.parse(match.documentID)];
-        return toReturn;
-} 
-    }
-   }
-   return [-15,-215];
+  File newFile = await currentFile.create();
+  return newFile;
 }
 
+class AutoMatchScoutState extends State<AutoMatchScout> {
+  List<Widget> pageList = [];
 
-/*
+  //extraWidget is the amount of widgets not dependent on a question array
+  final int extraWidgets = 4;
 
-@override
-void initState() {
-    // TODO: implement initState
-    super.initState();
-  getTeamClosestTimeTeam();
-  print(teamNum);
+
+  //in intQuestions the elements are the questions for which the answer is a number (it defaults to 0)
+  List<String> intQuestions = [
+    "Starting power cells",
+    "Low goal scored (A)",
+    "High goal scored (A)",
+    "Back hole scored (A)"
+  ];
+  //in yesNoQuestions the elements are the questions for which the answer is "yes" or "no" (it defaults to no)
+  List<String> yesNoQuestions = ["Moved"];
+
+  Future<List<Widget>> createThePage(
+      List<String> qualitiesInt, List<String> qualitiesYesNo) async {
+    //the first element of teamName and num is the the team number the second element [1] is the match number
+    List<int> teamNameAndNum = await getTeamClosestTimeTeam();
+    List<Widget> thePageValue = [];
+
+    //add Text widgets to a value that will become pagelist and be displayed
+    thePageValue.add(Text(teamNameAndNum[0].toString()));
+    thePageValue.add(Text("Match Num" + teamNameAndNum[1].toString()));
+
+    for (int i = 0; i < qualitiesInt.length; i++) {
+      //add text widget of question
+      thePageValue.add(Text(qualitiesInt[i]));
+
+      //put value in allData so it can be displayed insteam of causing an error
+      widget.allData.putIfAbsent(qualitiesInt[i], () => 0);
+
+      //add a row widget
+      thePageValue.add(Row(children: <Widget>[
+        //Flat buttons are buttons that don't move when clicked. Their clickable surface is the area of the button, not the widget on it
+        FlatButton(
+          //child is the widget in a thing
+          child: Text("+1"),
+          onPressed: () async {
+            //increase the value assosiated with the question by 1
+            widget.allData
+                .update(qualitiesInt[i], (dynamic value) => value + 1);
+            //the page does not update so instead the rebuilt page is added and the old page is removed
+            pageList.addAll(await createThePage(qualitiesInt, qualitiesYesNo));
+            pageList.removeRange(
+                0, qualitiesInt.length * 2 + extraWidgets + qualitiesYesNo.length * 2);
+          },
+        ),
+        FlatButton(
+          child: Text("-1"),
+          onPressed: () async {
+            widget.allData
+                .update(qualitiesInt[i], (dynamic value) => value - 1);
+
+            pageList.addAll(await createThePage(qualitiesInt, qualitiesYesNo));
+
+            pageList.removeRange(
+                0, qualitiesInt.length * 2 + extraWidgets + qualitiesYesNo.length * 2);
+          },
+        ),
+        //This text shows the value being changed
+        Text(widget.allData[qualitiesInt[i]].toString()),
+      ]));
+    }
+
+    //Same thing except there is yes and no instead of +1 and -1
+    for (int i = 0; i < qualitiesYesNo.length; i++) {
+      thePageValue.add(Text(qualitiesYesNo[i]));
+      widget.allData.putIfAbsent(qualitiesYesNo[i], () => "No");
+
+      thePageValue.add(Row(children: <Widget>[
+        FlatButton(
+          child: Text("Yes"),
+          onPressed: () async {
+            widget.allData.update(qualitiesYesNo[i], (dynamic value) => "Yes");
+
+            pageList.addAll(await createThePage(qualitiesInt, qualitiesYesNo));
+            print(pageList);
+            pageList.removeRange(
+                0, qualitiesInt.length * 2 + extraWidgets + qualitiesYesNo.length * 2);
+            print(pageList);
+            setState(() {});
+          },
+        ),
+        FlatButton(
+          child: Text("No"),
+          onPressed: () async {
+            widget.allData.update(qualitiesYesNo[i], (dynamic value) => "No");
+
+            pageList.addAll(await createThePage(qualitiesInt, qualitiesYesNo));
+            print(pageList);
+            pageList.removeRange(
+                0, qualitiesInt.length * 2 + extraWidgets + qualitiesYesNo.length * 2);
+            print(pageList);
+            setState(() {});
+          },
+        ),
+        Text(widget.allData[qualitiesYesNo[i]].toString()),
+      ]));
+    }
+    thePageValue.add(
+      InkWell(
+        child: Text(
+          "Go To TeleOp Scout",
+          textScaleFactor: 3,
+        ),
+        onTap: () {
+          goToTeleOpMatchScout(context, widget.allData);
+        },
+      ),
+    );
+    thePageValue.add(
+      InkWell(
+        child: Text(
+          "Go To Main Menu",
+          textScaleFactor: 3,
+        ),
+        onTap: () {
+          goToMainMenu(context);
+        },
+      ),
+    );
+
+    return thePageValue;
   }
-*/
 
- @override
-  void initState() {
-    super.initState();
-  
+  Future<List<int>> getTeamClosestTimeTeam() async {
+    //get the file which stores the user's name
+    File file = await _getNameFile();
+    //read the file
+    String name = file.readAsStringSync();
+
+    //get the time now
+    DateTime currentTime = new DateTime.now();
+
+    //get all documents (matches) ordered by their match number
+    var matchesPlace = await Firestore.instance
+        .collection("matches")
+        .orderBy("matchNum")
+        .getDocuments();
+    for (DocumentSnapshot match in matchesPlace.documents) {
+      //get all documents (teams) in order on database
+      var teams = await match.reference.collection("teams").getDocuments();
+      for (DocumentSnapshot team in teams.documents) {
+        DateTime dataMatchTime = DateTime.fromMillisecondsSinceEpoch(match["matchPredictedTime"] * 1000).toLocal();
+        //check if match is in the future
+        if (team["scouter"] == name && currentTime.isBefore(dataMatchTime)) {
+          //get the team number and name
+          List<int> toReturn = [
+            int.parse(team.documentID.substring(3)),
+            int.parse(match.documentID)
+          ];
+          //because the matches are iterated in order, the first one that works is the closest match so return its information
+          return toReturn;
+        }
+      }
+    }
+    //return these values if there is no match to scout
+    return [-15, -215];
   }
-@override
+
+  @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
@@ -215,29 +188,31 @@ void initState() {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: AppBar(
-        
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text("Match Scout AUTO PERIOD"),
-        actions: <Widget>[
-          RaisedButton(onPressed: ()async{pageList.addAll(await createThePage(intQuestions,yesNoQuestions));
-        setState(() {
-          
-        });
+        appBar: AppBar(
 
-          },color: Color(0xFFd82934),
-          child: Text("Load Page"),)
-        ]
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
+            // Here we take the value from the MyHomePage object that was created by
+            // the App.build method, and use it to set our appbar title.
+            title: Text("Match Scout AUTO PERIOD"),
+            //actions appear in the top right
+            actions: <Widget>[
+              //raised button is a button that moves when clicked and its clickable area is the entire visible button
+              //this button loads the page into pageList, causing the widgets to be shown
+              RaisedButton(
+                onPressed: () async {
+                  pageList.addAll(
+                      await createThePage(intQuestions, yesNoQuestions));
+                  setState(() {});
+                },
+                color: Color(0xFFd82934),
+                child: Text("Load Page"),
+              )
+            ]),
+        body: Center(
+            // Center is a layout widget. It takes a single child and positions it
+            // in the middle of the parent.
+            child: Column(
+          //uses variable pageList instead of declared List<Widget>
           children: pageList,
-        )
-          ));
-
-        
-}
+        )));
+  }
 }

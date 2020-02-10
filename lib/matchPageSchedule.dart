@@ -1,12 +1,5 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'dart:io';
-import 'package:path_provider/path_provider.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:image_picker/image_picker.dart';
+
 
 import 'main.dart';
 
@@ -27,7 +20,7 @@ class IndividualMatchState extends State<IndividualMatchPage>{
       ),
       body: Center(child: 
       Column(children: <Widget>[
-        
+        //display team # (color) $teamNumber, scouter
         Text('Team 1 (Red) : '+widget.teamsAndScouters[0]+", "+widget.teamsAndScouters[1], textScaleFactor: 1.5,),
         Text('Team 2 (Blue) : '+widget.teamsAndScouters[2]+", "+widget.teamsAndScouters[3], textScaleFactor: 1.5,),
         Text('Team 3 (Blue) : '+widget.teamsAndScouters[4]+", "+widget.teamsAndScouters[5], textScaleFactor: 1.5,),

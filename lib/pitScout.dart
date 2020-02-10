@@ -32,6 +32,8 @@ class PitScoutingTeamState extends State<PitScoutingTeamPage>
     with TickerProviderStateMixin {
   TextEditingController description = new TextEditingController();
 
+  int extraWidgets = 2;
+
   //page list for the tabs that use it
   List<Widget> conPageList = [];
   List<Widget> proPageList = [];
@@ -71,7 +73,7 @@ class PitScoutingTeamState extends State<PitScoutingTeamPage>
                 .addAll(createThePage(qualitiesInt, qualitiesYesNo, path));
 
             thePageValue.removeRange(
-                0, qualitiesInt.length * 2 + 2 + qualitiesYesNo.length * 2);
+                0, qualitiesInt.length * 2 + extraWidgets + qualitiesYesNo.length * 2);
 
             setState(() {});
           },
@@ -86,7 +88,7 @@ class PitScoutingTeamState extends State<PitScoutingTeamPage>
                 .addAll(createThePage(qualitiesInt, qualitiesYesNo, path));
 
             thePageValue.removeRange(
-                0, qualitiesInt.length * 2 + 2 + qualitiesYesNo.length * 2);
+                0, qualitiesInt.length * 2 + extraWidgets + qualitiesYesNo.length * 2);
 
             setState(() {});
           },
@@ -109,7 +111,7 @@ class PitScoutingTeamState extends State<PitScoutingTeamPage>
                 .addAll(createThePage(qualitiesInt, qualitiesYesNo, path));
             print(thePageValue);
             thePageValue.removeRange(
-                0, qualitiesInt.length * 2 + 2 + qualitiesYesNo.length * 2);
+                0, qualitiesInt.length * 2 + extraWidgets + qualitiesYesNo.length * 2);
             print(thePageValue);
             setState(() {});
           },
@@ -123,7 +125,7 @@ class PitScoutingTeamState extends State<PitScoutingTeamPage>
                 .addAll(createThePage(qualitiesInt, qualitiesYesNo, path));
 
             thePageValue.removeRange(
-                0, qualitiesInt.length * 2 + 2 + qualitiesYesNo.length * 2);
+                0, qualitiesInt.length * 2 + extraWidgets + qualitiesYesNo.length * 2);
 
             setState(() {});
           },

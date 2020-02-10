@@ -52,6 +52,8 @@ String name = file.readAsStringSync();
 
   int teamNum = -2;
 
+  int extraWidgets = 4;
+
   List<Widget> pageList = [];
 
   List<String> qualitiesInt = ["low goal scored", "high goal scored", "back hole scored"];
@@ -82,7 +84,7 @@ String name = file.readAsStringSync();
                   
                   pageList.addAll(await createThePage(qualitiesInt,qualitiesYesNo));
                   print(pageList);
-                  pageList.removeRange(0, qualitiesInt.length*2+4+qualitiesYesNo.length*2);
+                  pageList.removeRange(0, qualitiesInt.length*2+extraWidgets+qualitiesYesNo.length*2);
                   print(pageList);
                   setState(() {
                     
@@ -99,7 +101,7 @@ String name = file.readAsStringSync();
                   
                   pageList.addAll(await createThePage(qualitiesInt,qualitiesYesNo));
                   print(pageList);
-                  pageList.removeRange(0, qualitiesInt.length*2+4+qualitiesYesNo.length*2);
+                  pageList.removeRange(0, qualitiesInt.length*2+extraWidgets+qualitiesYesNo.length*2);
                   print(pageList);
                   setState(() {
                     
@@ -127,7 +129,7 @@ String name = file.readAsStringSync();
                   
                   pageList.addAll(await createThePage(qualitiesInt,qualitiesYesNo));
                   print(pageList);
-                  pageList.removeRange(0, qualitiesInt.length*2+4+qualitiesYesNo.length*2);
+                  pageList.removeRange(0, qualitiesInt.length*2+extraWidgets+qualitiesYesNo.length*2);
                   print(pageList);
                   setState(() {
                     
@@ -145,7 +147,7 @@ String name = file.readAsStringSync();
                   
                   pageList.addAll(await createThePage(qualitiesInt,qualitiesYesNo));
                   print(pageList);
-                  pageList.removeRange(0, qualitiesInt.length*2+4+qualitiesYesNo.length*2);
+                  pageList.removeRange(0, qualitiesInt.length*2+extraWidgets+qualitiesYesNo.length*2);
                   print(pageList);
                   setState(() {
                     

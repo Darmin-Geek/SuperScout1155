@@ -135,18 +135,27 @@ class PitScoutingTeamState extends State<PitScoutingTeamPage>
     }
     thePageValue.add(InkWell(
       child: Text("Submit"),
-      onTap: () {
+      onTap: () async{
         print("uploading");
+
+        File nameFile = await _getNameFile();
+
+        String name = nameFile.readAsStringSync();
+
 
         Firestore.instance
             .collection("teams")
             .document(widget.teamNumber)
             .collection("pitScouts")
-            .document(path)
+            .document(name)
             .setData({
           "allData": widget.allData,
         });
         print("done");
+        showDialog(context: context, 
+        builder: (BuildContext context){return AlertDialog(
+          content: Text("Uploaded!"),
+        );});
       },
     ));
     if (path == "Construction") {

@@ -43,7 +43,7 @@ class PitScoutingState extends State<PitScoutingPage> {
               var teamName = document['teamName'];
               var teamNumber = document["teamNumber"];
               var hasProgramingPitScout = document["hasProgrammingPitScout"];
-              print(document['teamName']);
+              //print(document['teamName']);
               goToPitScoutingTeamScreen(
                   context, teamName, teamNumber, hasProgramingPitScout);
             },

@@ -66,6 +66,7 @@ class AutoMatchScoutState extends State<AutoMatchScout> {
                 qualitiesInt.length * 2 +
                     extraWidgets +
                     qualitiesYesNo.length * 2);
+            setState(() {});
           },
         ),
         TextButton(
@@ -81,8 +82,10 @@ class AutoMatchScoutState extends State<AutoMatchScout> {
                 qualitiesInt.length * 2 +
                     extraWidgets +
                     qualitiesYesNo.length * 2);
+            setState(() {});
           },
         ),
+
         //This text shows the value being changed
         Text(widget.allData[qualitiesInt[i]].toString()),
       ]));
@@ -99,13 +102,7 @@ class AutoMatchScoutState extends State<AutoMatchScout> {
           onPressed: () async {
             widget.allData.update(qualitiesYesNo[i], (dynamic value) => "Yes");
 
-            pageList.addAll(await createThePage(qualitiesInt, qualitiesYesNo));
-            print(pageList);
-            pageList.removeRange(
-                0,
-                qualitiesInt.length * 2 +
-                    extraWidgets +
-                    qualitiesYesNo.length * 2);
+            pageList = await createThePage(qualitiesInt, qualitiesYesNo);
             print(pageList);
             setState(() {});
           },
@@ -115,13 +112,7 @@ class AutoMatchScoutState extends State<AutoMatchScout> {
           onPressed: () async {
             widget.allData.update(qualitiesYesNo[i], (dynamic value) => "No");
 
-            pageList.addAll(await createThePage(qualitiesInt, qualitiesYesNo));
-            print(pageList);
-            pageList.removeRange(
-                0,
-                qualitiesInt.length * 2 +
-                    extraWidgets +
-                    qualitiesYesNo.length * 2);
+            pageList = await createThePage(qualitiesInt, qualitiesYesNo);
             print(pageList);
             setState(() {});
           },

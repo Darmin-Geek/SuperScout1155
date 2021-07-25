@@ -97,13 +97,14 @@ class TeleOpMatchScoutState extends State<TeleOpMatchScout> {
             widget.allData
                 .update(qualitiesInt[i], (dynamic value) => value + 1);
 
-            pageList.addAll(await createThePage(qualitiesInt, qualitiesYesNo));
+            /* pageList.addAll(await createThePage(qualitiesInt, qualitiesYesNo));
             print(pageList);
             pageList.removeRange(
                 0,
                 qualitiesInt.length * 2 +
                     extraWidgets +
-                    qualitiesYesNo.length * 2);
+                    qualitiesYesNo.length * 2);*/
+            pageList = await createThePage(qualitiesInt, qualitiesYesNo);
             print(pageList);
             setState(() {});
           },
@@ -114,13 +115,7 @@ class TeleOpMatchScoutState extends State<TeleOpMatchScout> {
             widget.allData
                 .update(qualitiesInt[i], (dynamic value) => value - 1);
 
-            pageList.addAll(await createThePage(qualitiesInt, qualitiesYesNo));
-            print(pageList);
-            pageList.removeRange(
-                0,
-                qualitiesInt.length * 2 +
-                    extraWidgets +
-                    qualitiesYesNo.length * 2);
+            pageList = await createThePage(qualitiesInt, qualitiesYesNo);
             print(pageList);
             setState(() {});
           },
@@ -139,13 +134,7 @@ class TeleOpMatchScoutState extends State<TeleOpMatchScout> {
           onPressed: () async {
             widget.allData.update(qualitiesYesNo[i], (dynamic value) => "Yes");
 
-            pageList.addAll(await createThePage(qualitiesInt, qualitiesYesNo));
-            print(pageList);
-            pageList.removeRange(
-                0,
-                qualitiesInt.length * 2 +
-                    extraWidgets +
-                    qualitiesYesNo.length * 2);
+            pageList = await createThePage(qualitiesInt, qualitiesYesNo);
             print(pageList);
             setState(() {});
           },
@@ -155,13 +144,7 @@ class TeleOpMatchScoutState extends State<TeleOpMatchScout> {
           onPressed: () async {
             widget.allData.update(qualitiesYesNo[i], (dynamic value) => "No");
 
-            pageList.addAll(await createThePage(qualitiesInt, qualitiesYesNo));
-            print(pageList);
-            pageList.removeRange(
-                0,
-                qualitiesInt.length * 2 +
-                    extraWidgets +
-                    qualitiesYesNo.length * 2);
+            pageList = await createThePage(qualitiesInt, qualitiesYesNo);
             print(pageList);
             setState(() {});
             // });
@@ -213,8 +196,7 @@ class TeleOpMatchScoutState extends State<TeleOpMatchScout> {
             actions: <Widget>[
               ElevatedButton(
                 onPressed: () async {
-                  pageList.addAll(
-                      await createThePage(qualitiesInt, qualitiesYesNo));
+                  pageList = await createThePage(qualitiesInt, qualitiesYesNo);
                   setState(() {});
                 },
                 style: ButtonStyle(

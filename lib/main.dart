@@ -169,35 +169,41 @@ class MainPageState extends State<MainPage> {
             Padding(
               padding: EdgeInsets.all(20),
             ),
-            RaisedButton(
+            ElevatedButton(
               child: Text("Pit scout", textScaleFactor: 3),
               onPressed: () {
                 goToPitScoutingScreen(context);
               },
               //color is color of the button
-              color: Color(0xFFFFC107),
+              style: ButtonStyle(
+                  backgroundColor:
+                      MaterialStateProperty.all<Color>(Color(0xFFFFC107))),
             ),
 
             Padding(
               padding: EdgeInsets.all(20),
             ),
-            RaisedButton(
+            ElevatedButton(
               child: Text("Schedule", textScaleFactor: 3),
               onPressed: () {
                 goToPitScheduleScreen(context);
               },
-              color: Color(0xFFFFC107),
+              style: ButtonStyle(
+                  backgroundColor:
+                      MaterialStateProperty.all<Color>(Color((0xFFFFC107)))),
             ),
 
             Padding(
               padding: EdgeInsets.all(20),
             ),
-            RaisedButton(
+            ElevatedButton(
               child: Text("Match Scout", textScaleFactor: 3),
               onPressed: () {
                 goToAutoMatchScout(context, {"teamNum": -10});
               },
-              color: Color(0xFFFFC107),
+              style: ButtonStyle(
+                  backgroundColor:
+                      MaterialStateProperty.all<Color>(Color(0xFFFFC107))),
             ),
           ],
         )));

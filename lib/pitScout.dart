@@ -60,7 +60,7 @@ class PitScoutingTeamState extends State<PitScoutingTeamPage>
       widget.allData.putIfAbsent(qualitiesInt[i], () => 0);
 
       thePageValue.add(Row(children: <Widget>[
-        FlatButton(
+        TextButton(
           child: Text("+1"),
           onPressed: () {
             print(widget.allData);
@@ -73,12 +73,15 @@ class PitScoutingTeamState extends State<PitScoutingTeamPage>
                 .addAll(createThePage(qualitiesInt, qualitiesYesNo, path));
 
             thePageValue.removeRange(
-                0, qualitiesInt.length * 2 + extraWidgets + qualitiesYesNo.length * 2);
+                0,
+                qualitiesInt.length * 2 +
+                    extraWidgets +
+                    qualitiesYesNo.length * 2);
 
             setState(() {});
           },
         ),
-        FlatButton(
+        TextButton(
           child: Text("-1"),
           onPressed: () {
             widget.allData
@@ -88,7 +91,10 @@ class PitScoutingTeamState extends State<PitScoutingTeamPage>
                 .addAll(createThePage(qualitiesInt, qualitiesYesNo, path));
 
             thePageValue.removeRange(
-                0, qualitiesInt.length * 2 + extraWidgets + qualitiesYesNo.length * 2);
+                0,
+                qualitiesInt.length * 2 +
+                    extraWidgets +
+                    qualitiesYesNo.length * 2);
 
             setState(() {});
           },
@@ -102,7 +108,7 @@ class PitScoutingTeamState extends State<PitScoutingTeamPage>
       widget.allData.putIfAbsent(qualitiesYesNo[i], () => "No");
 
       thePageValue.add(Row(children: <Widget>[
-        FlatButton(
+        TextButton(
           child: Text("Yes"),
           onPressed: () {
             widget.allData.update(qualitiesYesNo[i], (dynamic value) => "Yes");
@@ -111,12 +117,15 @@ class PitScoutingTeamState extends State<PitScoutingTeamPage>
                 .addAll(createThePage(qualitiesInt, qualitiesYesNo, path));
             print(thePageValue);
             thePageValue.removeRange(
-                0, qualitiesInt.length * 2 + extraWidgets + qualitiesYesNo.length * 2);
+                0,
+                qualitiesInt.length * 2 +
+                    extraWidgets +
+                    qualitiesYesNo.length * 2);
             print(thePageValue);
             setState(() {});
           },
         ),
-        FlatButton(
+        TextButton(
           child: Text("No"),
           onPressed: () {
             widget.allData.update(qualitiesYesNo[i], (dynamic value) => "No");
@@ -125,7 +134,10 @@ class PitScoutingTeamState extends State<PitScoutingTeamPage>
                 .addAll(createThePage(qualitiesInt, qualitiesYesNo, path));
 
             thePageValue.removeRange(
-                0, qualitiesInt.length * 2 + extraWidgets + qualitiesYesNo.length * 2);
+                0,
+                qualitiesInt.length * 2 +
+                    extraWidgets +
+                    qualitiesYesNo.length * 2);
 
             setState(() {});
           },
@@ -135,11 +147,11 @@ class PitScoutingTeamState extends State<PitScoutingTeamPage>
     }
     thePageValue.add(InkWell(
       child: Text("Submit"),
-      onTap: () async{
+      onTap: () async {
         print("uploading");
 
         File nameFile = await _getNameFile();
-        
+
         String name = nameFile.readAsStringSync();
 
         //widget.allData.putIfAbsent("name", () => [name]);
@@ -154,10 +166,13 @@ class PitScoutingTeamState extends State<PitScoutingTeamPage>
           "allData": widget.allData,
         });
         print("done");
-        showDialog(context: context, 
-        builder: (BuildContext context){return AlertDialog(
-          content: Text("Uploaded!"),
-        );});
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                content: Text("Uploaded!"),
+              );
+            });
       },
     ));
     if (path == "Construction") {
@@ -232,16 +247,14 @@ class PitScoutingTeamState extends State<PitScoutingTeamPage>
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             if (pageType == "I")
-               Column(
-                  children: <Widget>[
-                    Text(
-                        "I can not currently check if a pitscout has been submited\nIf I could, that information would be here")
-                  ],
-                ),
-            
-              
+              Column(
+                children: <Widget>[
+                  Text(
+                      "I can not currently check if a pitscout has been submited\nIf I could, that information would be here")
+                ],
+              ),
             if (pageType == "C")
-               Center(
+              Center(
                 child: ListView(
                     padding: EdgeInsets.all(20),
                     shrinkWrap: true,
@@ -249,23 +262,24 @@ class PitScoutingTeamState extends State<PitScoutingTeamPage>
               ),
             if (pageType == "P")
               ListView(
-                      padding: EdgeInsets.all(20),
-                      shrinkWrap: true,
-                      children: proPageList),
+                  padding: EdgeInsets.all(20),
+                  shrinkWrap: true,
+                  children: proPageList),
             if (pageType == "photo")
               Visibility(
                 child: Column(
                   children: <Widget>[
-                    RaisedButton(
+                    ElevatedButton(
                       child: Text(
                         "Upload photo of robot",
                         textScaleFactor: 2.5,
                       ),
                       onPressed: () async {
-                        await ImagePicker.pickImage(source: ImageSource.gallery)
+                        await ImagePicker()
+                            .pickImage(source: ImageSource.gallery)
                             .then((takenPhoto) {
                           setState(() {
-                            image = takenPhoto;
+                            image = File(takenPhoto.path);
                             showImageSubmit = true;
                           });
                         });
@@ -281,7 +295,7 @@ class PitScoutingTeamState extends State<PitScoutingTeamPage>
                     controller: description,
                     decoration: InputDecoration(hintText: "Description"),
                   ),
-                  RaisedButton(
+                  ElevatedButton(
                     child: Text(
                       "Submit photo of robot",
                       textScaleFactor: 2.5,

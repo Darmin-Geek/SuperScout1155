@@ -22,7 +22,6 @@ class AutoMatchScoutState extends State<AutoMatchScout> {
   //extraWidget is the amount of widgets not dependent on a question array
   final int extraWidgets = 4;
 
-
   //in intQuestions the elements are the questions for which the answer is a number (it defaults to 0)
   List<String> intQuestions = [
     "Starting power cells",
@@ -53,7 +52,7 @@ class AutoMatchScoutState extends State<AutoMatchScout> {
       //add a row widget
       thePageValue.add(Row(children: <Widget>[
         //Flat buttons are buttons that don't move when clicked. Their clickable surface is the area of the button, not the widget on it
-        FlatButton(
+        TextButton(
           //child is the widget in a thing
           child: Text("+1"),
           onPressed: () async {
@@ -63,10 +62,13 @@ class AutoMatchScoutState extends State<AutoMatchScout> {
             //the page does not update so instead the rebuilt page is added and the old page is removed
             pageList.addAll(await createThePage(qualitiesInt, qualitiesYesNo));
             pageList.removeRange(
-                0, qualitiesInt.length * 2 + extraWidgets + qualitiesYesNo.length * 2);
+                0,
+                qualitiesInt.length * 2 +
+                    extraWidgets +
+                    qualitiesYesNo.length * 2);
           },
         ),
-        FlatButton(
+        TextButton(
           child: Text("-1"),
           onPressed: () async {
             widget.allData
@@ -75,7 +77,10 @@ class AutoMatchScoutState extends State<AutoMatchScout> {
             pageList.addAll(await createThePage(qualitiesInt, qualitiesYesNo));
 
             pageList.removeRange(
-                0, qualitiesInt.length * 2 + extraWidgets + qualitiesYesNo.length * 2);
+                0,
+                qualitiesInt.length * 2 +
+                    extraWidgets +
+                    qualitiesYesNo.length * 2);
           },
         ),
         //This text shows the value being changed
@@ -89,7 +94,7 @@ class AutoMatchScoutState extends State<AutoMatchScout> {
       widget.allData.putIfAbsent(qualitiesYesNo[i], () => "No");
 
       thePageValue.add(Row(children: <Widget>[
-        FlatButton(
+        TextButton(
           child: Text("Yes"),
           onPressed: () async {
             widget.allData.update(qualitiesYesNo[i], (dynamic value) => "Yes");
@@ -97,12 +102,15 @@ class AutoMatchScoutState extends State<AutoMatchScout> {
             pageList.addAll(await createThePage(qualitiesInt, qualitiesYesNo));
             print(pageList);
             pageList.removeRange(
-                0, qualitiesInt.length * 2 + extraWidgets + qualitiesYesNo.length * 2);
+                0,
+                qualitiesInt.length * 2 +
+                    extraWidgets +
+                    qualitiesYesNo.length * 2);
             print(pageList);
             setState(() {});
           },
         ),
-        FlatButton(
+        TextButton(
           child: Text("No"),
           onPressed: () async {
             widget.allData.update(qualitiesYesNo[i], (dynamic value) => "No");
@@ -110,7 +118,10 @@ class AutoMatchScoutState extends State<AutoMatchScout> {
             pageList.addAll(await createThePage(qualitiesInt, qualitiesYesNo));
             print(pageList);
             pageList.removeRange(
-                0, qualitiesInt.length * 2 + extraWidgets + qualitiesYesNo.length * 2);
+                0,
+                qualitiesInt.length * 2 +
+                    extraWidgets +
+                    qualitiesYesNo.length * 2);
             print(pageList);
             setState(() {});
           },
@@ -162,7 +173,9 @@ class AutoMatchScoutState extends State<AutoMatchScout> {
       //get all documents (teams) in order on database
       var teams = await match.reference.collection("teams").getDocuments();
       for (DocumentSnapshot team in teams.documents) {
-        DateTime dataMatchTime = DateTime.fromMillisecondsSinceEpoch(match["matchPredictedTime"] * 1000).toLocal();
+        DateTime dataMatchTime = DateTime.fromMillisecondsSinceEpoch(
+                match["matchPredictedTime"] * 1000)
+            .toLocal();
         //check if match is in the future
         if (team["scouter"] == name && currentTime.isBefore(dataMatchTime)) {
           //get the team number and name
@@ -197,13 +210,15 @@ class AutoMatchScoutState extends State<AutoMatchScout> {
             actions: <Widget>[
               //raised button is a button that moves when clicked and its clickable area is the entire visible button
               //this button loads the page into pageList, causing the widgets to be shown
-              RaisedButton(
+              ElevatedButton(
                 onPressed: () async {
                   pageList.addAll(
                       await createThePage(intQuestions, yesNoQuestions));
                   setState(() {});
                 },
-                color: Color(0xFFd82934),
+                style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(Color(0xFFd82934))),
                 child: Text("Load Page"),
               )
             ]),

@@ -1,9 +1,17 @@
 //Import packages
 
+import 'dart:math';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
+
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 //import app files
 import 'autoMatchScout.dart';
@@ -166,6 +174,140 @@ class MainPageState extends State<MainPage> {
                 print(nameFile.readAsStringSync());
               },
             ),
+            Padding(
+              padding: EdgeInsets.all(20),
+            ),
+            ElevatedButton(
+                onPressed: () async {
+                  FlutterLocalNotificationsPlugin().initialize(
+                      InitializationSettings(
+                          android: AndroidInitializationSettings("notify")));
+                  FlutterLocalNotificationsPlugin().cancelAll();
+
+                  tz.initializeTimeZones();
+                  print(tz.UTC);
+
+                  String name = (await _getNameFile()).readAsStringSync();
+
+                  print("name is:" + name + "|");
+                  bool hasGoneThrough = false;
+                  var matchDocs =
+                      await Firestore().collection("matches").getDocuments();
+                  for (var match in matchDocs.documents) {
+                    var scoutDocs = await match.reference
+                        .collection("teams")
+                        .getDocuments();
+                    for (var scout in scoutDocs.documents) {
+                      print(scout.data["scouter"] == name);
+                      print(tz.TZDateTime.fromMillisecondsSinceEpoch(
+                          tz.getLocation("America/New_York"),
+                          match.data["matchPredictedTime"] * 1000));
+                      print("comparer" +
+                          tz.TZDateTime.fromMillisecondsSinceEpoch(
+                                  tz.getLocation("America/New_York"),
+                                  match.data["matchPredictedTime"] * 1000)
+                              .toLocal()
+                              .toString() +
+                          tz.TZDateTime.now(tz.getLocation("America/New_York"))
+                              .toLocal()
+                              .toString());
+                      if (scout.data["scouter"] == name &&
+                          tz.TZDateTime.fromMillisecondsSinceEpoch(
+                                  tz.getLocation("America/New_York"),
+                                  match.data["matchPredictedTime"] * 1000)
+                              .toLocal()
+                              .isAfter(tz.TZDateTime.now(
+                                      tz.getLocation("America/New_York"))
+                                  .toLocal())) {
+                        print("created 1");
+                        hasGoneThrough = true;
+                        await FlutterLocalNotificationsPlugin().zonedSchedule(
+                            Random().nextInt(10000),
+                            "3 minute alert",
+                            "Match#" +
+                                match.data["matchNum"].toString() +
+                                "  Team #" +
+                                scout.documentID.substring(3) +
+                                " " +
+                                scout.data["allance"] +
+                                " alliance",
+                            tz.TZDateTime.fromMillisecondsSinceEpoch(
+                                    tz.getLocation("America/New_York"),
+                                    match.data["matchPredictedTime"] * 1000)
+                                .subtract(Duration(minutes: 3)),
+                            NotificationDetails(
+                                android: AndroidNotificationDetails(
+                                    "matchIn3Id",
+                                    "3 minute alerts",
+                                    "Alerts that show 3 minutes before the predicted time of the match",
+                                    fullScreenIntent: true,
+                                    category: "Robotics",
+                                    priority: Priority.high)),
+                            androidAllowWhileIdle: true,
+                            uiLocalNotificationDateInterpretation:
+                                UILocalNotificationDateInterpretation
+                                    .absoluteTime);
+                        await FlutterLocalNotificationsPlugin().zonedSchedule(
+                            Random().nextInt(10000),
+                            "1 minute alert",
+                            "Match#" +
+                                match.data["matchNum"].toString() +
+                                "  Team #" +
+                                scout.documentID.substring(3) +
+                                " " +
+                                scout.data["allance"] +
+                                " alliance",
+                            tz.TZDateTime.fromMillisecondsSinceEpoch(
+                                    tz.getLocation("America/New_York"),
+                                    match.data["matchPredictedTime"] * 1000)
+                                .subtract(Duration(minutes: 1)),
+                            NotificationDetails(
+                                android: AndroidNotificationDetails(
+                                    "matchIn1Id",
+                                    "1 minute alerts",
+                                    "Alerts that show 1 minute before the predicted time of the match",
+                                    fullScreenIntent: true,
+                                    category: "Robotics",
+                                    priority: Priority.high)),
+                            androidAllowWhileIdle: true,
+                            uiLocalNotificationDateInterpretation:
+                                UILocalNotificationDateInterpretation
+                                    .absoluteTime);
+                      }
+                    }
+                  }
+
+                  await FlutterLocalNotificationsPlugin().zonedSchedule(
+                      0,
+                      "Notifications have been created",
+                      "If you fully close the app, the notifications may be discarded and you will have to press the button again.",
+                      tz.TZDateTime.now(tz.local).add(Duration(seconds: 1)),
+                      NotificationDetails(
+                          android: AndroidNotificationDetails(
+                              "testsId",
+                              "Other",
+                              "Other notifications such as ones to inform you that notifcations have been created.",
+                              fullScreenIntent: true,
+                              category: "Robotics",
+                              priority: Priority.high)),
+                      androidAllowWhileIdle: true,
+                      uiLocalNotificationDateInterpretation:
+                          UILocalNotificationDateInterpretation.absoluteTime);
+                  /*FlutterLocalNotificationsPlugin().show(
+                      1,
+                      "right now",
+                      "this body should show now",
+                      NotificationDetails(
+                          AndroidNotificationDetails(
+                            "com.android.example.WORK_EMAIL",
+                            "NameTestChannel1",
+                            "test description1",
+                          ),
+                          IOSNotificationDetails()));*/
+                  print("scheduled");
+                  print("has gone:" + hasGoneThrough.toString());
+                },
+                child: Text("Schedule Notifications")),
             Padding(
               padding: EdgeInsets.all(20),
             ),

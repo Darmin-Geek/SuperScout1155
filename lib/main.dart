@@ -23,17 +23,8 @@ import 'schedule.dart';
 import 'matchPageSchedule.dart';
 import 'selectionPitScout.dart';
 
-Future<File> _getNameFile() async {
-  // get the path to the document directory.
-  String dir = (await getApplicationDocumentsDirectory()).path;
-  print(dir);
-  //initialize the file at the directory
-  File currentFile = File('$dir/Name.txt');
-  print(currentFile);
-  //actually create the file IF it does not exist
-  File newFile = await currentFile.create();
-  return newFile;
-}
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 //goToFunctions take in the context of where they are called and change the page
 
@@ -109,7 +100,19 @@ void Function() goToDriverRatingMatchScout(BuildContext context, Map inputMap) {
               )));
 }
 
-void main() => runApp(MyApp());
+void main() async {
+  await Firebase.initializeApp(
+      options: FirebaseOptions.fromMap({
+    "apiKey": "AIzaSyB1eWbM0dizdPIbJnUpDQ7XMz8dohrIrP4",
+    "authDomain": "scouting1155-6723f.firebaseapp.com",
+    "databaseURL": "https://scouting1155-6723f.firebaseio.com",
+    "projectId": "scouting1155-6723f",
+    "storageBucket": "scouting1155-6723f.appspot.com",
+    "messagingSenderId": "32651962504",
+    "appId": "1:32651962504:web:3353e22c9133584056173d"
+  }));
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -169,14 +172,13 @@ class MainPageState extends State<MainPage> {
               controller: nameController,
               decoration: InputDecoration(hintText: "Name"),
               onChanged: (name) async {
-                File nameFile = await _getNameFile();
-                nameFile.writeAsStringSync(name);
-                print(nameFile.readAsStringSync());
+                (await SharedPreferences.getInstance()).setString("name", name);
               },
             ),
             Padding(
               padding: EdgeInsets.all(20),
             ),
+            /*
             ElevatedButton(
                 onPressed: () async {
                   FlutterLocalNotificationsPlugin().initialize(
@@ -187,7 +189,8 @@ class MainPageState extends State<MainPage> {
                   tz.initializeTimeZones();
                   print(tz.UTC);
 
-                  String name = (await _getNameFile()).readAsStringSync();
+                  String name =
+                      (await SharedPreferences.getInstance()).getString("name");
 
                   print("name is:" + name + "|");
                   bool hasGoneThrough = false;
@@ -307,7 +310,7 @@ class MainPageState extends State<MainPage> {
                   print("scheduled");
                   print("has gone:" + hasGoneThrough.toString());
                 },
-                child: Text("Schedule Notifications")),
+                child: Text("Schedule Notifications")),*/
             Padding(
               padding: EdgeInsets.all(20),
             ),

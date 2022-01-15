@@ -4,7 +4,7 @@ import 'main.dart';
 
 Future<bool> getDocumentExistence(
     DocumentSnapshot document, String path) async {
-  document.reference.collection("pitScouts").document(path).get().then((doc) {
+  document.reference.collection("pitScouts").doc(path).get().then((doc) {
     return doc.exists;
   });
 }
@@ -35,9 +35,9 @@ class PitScoutingState extends State<PitScoutingPage> {
             child: Text("Submit"),
             onPressed: () async {
               //document refrence is the path
-              DocumentReference documentReference = Firestore.instance
+              DocumentReference documentReference = FirebaseFirestore.instance
                   .collection("teams")
-                  .document(editingController.text);
+                  .doc(editingController.text);
               //document snapshot is the document with its data
               DocumentSnapshot document = await documentReference.get();
               var teamName = document['teamName'];

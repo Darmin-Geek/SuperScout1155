@@ -157,12 +157,12 @@ class PitScoutingTeamState extends State<PitScoutingTeamPage>
         //widget.allData.putIfAbsent("name", () => [name]);
         // if(widget.allData["name"]==name)
 
-        Firestore.instance
+        FirebaseFirestore.instance
             .collection("teams")
-            .document(widget.teamNumber)
+            .doc(widget.teamNumber)
             .collection("pitScouts")
-            .document(path)
-            .setData({
+            .doc(path)
+            .set({
           "allData": widget.allData,
         });
         print("done");
@@ -310,19 +310,17 @@ class PitScoutingTeamState extends State<PitScoutingTeamPage>
                       File senderNameFile = await _getNameFile();
                       String senderName = await senderNameFile.readAsString();
                       //Storage refrence is path
-                      StorageReference storageReference = FirebaseStorage
-                          .instance
+                      Reference storageReference = FirebaseStorage.instance
                           .ref()
                           .child(widget.teamNumber)
                           .child(senderName + " " + count.toString())
                           .child("image");
                       //Order an upload and record it
-                      StorageUploadTask storageUploadTask =
+                      UploadTask storageUploadTask =
                           storageReference.putFile(image);
                       String dir =
                           (await getApplicationDocumentsDirectory()).path;
-                      StorageReference referenceOfText = FirebaseStorage
-                          .instance
+                      Reference referenceOfText = FirebaseStorage.instance
                           .ref()
                           .child(widget.teamNumber)
                           .child(senderName + " " + count.toString())
@@ -330,11 +328,11 @@ class PitScoutingTeamState extends State<PitScoutingTeamPage>
                       File descriptionFile = File("$dir/" + count.toString());
                       String descriptionText = description.text;
                       await descriptionFile.writeAsString(descriptionText);
-                      StorageUploadTask sendText =
+                      UploadTask sendText =
                           referenceOfText.putFile(descriptionFile);
                       //wait until the uploads are completed
-                      await storageUploadTask.onComplete;
-                      await sendText.onComplete;
+                      // await storageUploadTask.onComplete;
+                      // await sendText.onComplete;
                       print("File uploaded");
                       senderUploadCountFile.writeAsString(
                           await senderUploadCountFile.readAsString() + "0");

@@ -156,14 +156,14 @@ class AutoMatchScoutState extends State<AutoMatchScout> {
     DateTime currentTime = new DateTime.now();
 
     //get all documents (matches) ordered by their match number
-    var matchesPlace = await Firestore.instance
+    var matchesPlace = await FirebaseFirestore.instance
         .collection("matches")
         .orderBy("matchNum")
-        .getDocuments();
-    for (DocumentSnapshot match in matchesPlace.documents) {
+        .get();
+    for (DocumentSnapshot match in matchesPlace.docs) {
       //get all documents (teams) in order on database
-      var teams = await match.reference.collection("teams").getDocuments();
-      for (DocumentSnapshot team in teams.documents) {
+      var teams = await match.reference.collection("teams").get();
+      for (DocumentSnapshot team in teams.docs) {
         DateTime dataMatchTime = DateTime.fromMillisecondsSinceEpoch(
                 match["matchPredictedTime"] * 1000)
             .toLocal();
@@ -171,8 +171,8 @@ class AutoMatchScoutState extends State<AutoMatchScout> {
         if (team["scouter"] == name && currentTime.isBefore(dataMatchTime)) {
           //get the team number and name
           List<int> toReturn = [
-            int.parse(team.documentID.substring(3)),
-            int.parse(match.documentID)
+            int.parse(team.id.substring(3)),
+            int.parse(match.id)
           ];
           //because the matches are iterated in order, the first one that works is the closest match so return its information
           return toReturn;

@@ -10,6 +10,7 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -22,18 +23,6 @@ import 'pitScout.dart';
 import 'schedule.dart';
 import 'matchPageSchedule.dart';
 import 'selectionPitScout.dart';
-
-Future<File> _getNameFile() async {
-  // get the path to the document directory.
-  String dir = (await getApplicationDocumentsDirectory()).path;
-  print(dir);
-  //initialize the file at the directory
-  File currentFile = File('$dir/Name.txt');
-  print(currentFile);
-  //actually create the file IF it does not exist
-  File newFile = await currentFile.create();
-  return newFile;
-}
 
 //goToFunctions take in the context of where they are called and change the page
 
@@ -169,9 +158,7 @@ class MainPageState extends State<MainPage> {
               controller: nameController,
               decoration: InputDecoration(hintText: "Name"),
               onChanged: (name) async {
-                File nameFile = await _getNameFile();
-                nameFile.writeAsStringSync(name);
-                print(nameFile.readAsStringSync());
+                (await SharedPreferences.getInstance()).setString("name", name);
               },
             ),
             Padding(
@@ -187,34 +174,35 @@ class MainPageState extends State<MainPage> {
                   tz.initializeTimeZones();
                   print(tz.UTC);
 
-                  String name = (await _getNameFile()).readAsStringSync();
+                  String name =
+                      (await SharedPreferences.getInstance()).getString("name");
 
                   print("name is:" + name + "|");
                   bool hasGoneThrough = false;
-                  var matchDocs =
-                      await Firestore().collection("matches").getDocuments();
-                  for (var match in matchDocs.documents) {
-                    var scoutDocs = await match.reference
-                        .collection("teams")
-                        .getDocuments();
-                    for (var scout in scoutDocs.documents) {
-                      print(scout.data["scouter"] == name);
+                  var matchDocs = await FirebaseFirestore.instance
+                      .collection("matches")
+                      .get();
+                  for (var match in matchDocs.docs) {
+                    var scoutDocs =
+                        await match.reference.collection("teams").get();
+                    for (var scout in scoutDocs.docs) {
+                      print(scout.data()["scouter"] == name);
                       print(tz.TZDateTime.fromMillisecondsSinceEpoch(
                           tz.getLocation("America/New_York"),
-                          match.data["matchPredictedTime"] * 1000));
+                          match.data()["matchPredictedTime"] * 1000));
                       print("comparer" +
                           tz.TZDateTime.fromMillisecondsSinceEpoch(
                                   tz.getLocation("America/New_York"),
-                                  match.data["matchPredictedTime"] * 1000)
+                                  match.data()["matchPredictedTime"] * 1000)
                               .toLocal()
                               .toString() +
                           tz.TZDateTime.now(tz.getLocation("America/New_York"))
                               .toLocal()
                               .toString());
-                      if (scout.data["scouter"] == name &&
+                      if (scout.data()["scouter"] == name &&
                           tz.TZDateTime.fromMillisecondsSinceEpoch(
                                   tz.getLocation("America/New_York"),
-                                  match.data["matchPredictedTime"] * 1000)
+                                  match.data()["matchPredictedTime"] * 1000)
                               .toLocal()
                               .isAfter(tz.TZDateTime.now(
                                       tz.getLocation("America/New_York"))
@@ -225,21 +213,21 @@ class MainPageState extends State<MainPage> {
                             Random().nextInt(10000),
                             "3 minute alert",
                             "Match#" +
-                                match.data["matchNum"].toString() +
+                                match.data()["matchNum"].toString() +
                                 "  Team #" +
-                                scout.documentID.substring(3) +
+                                scout.id.substring(3) +
                                 " " +
-                                scout.data["allance"] +
+                                scout.data()["allance"] +
                                 " alliance",
                             tz.TZDateTime.fromMillisecondsSinceEpoch(
                                     tz.getLocation("America/New_York"),
-                                    match.data["matchPredictedTime"] * 1000)
+                                    match.data()["matchPredictedTime"] * 1000)
                                 .subtract(Duration(minutes: 3)),
                             NotificationDetails(
                                 android: AndroidNotificationDetails(
-                                    "matchIn3Id",
-                                    "3 minute alerts",
-                                    "Alerts that show 3 minutes before the predicted time of the match",
+                                    "matchIn3Id", "3 minute alerts",
+                                    channelDescription:
+                                        "Alerts that show 3 minutes before the predicted time of the match",
                                     fullScreenIntent: true,
                                     category: "Robotics",
                                     priority: Priority.high)),
@@ -251,21 +239,21 @@ class MainPageState extends State<MainPage> {
                             Random().nextInt(10000),
                             "1 minute alert",
                             "Match#" +
-                                match.data["matchNum"].toString() +
+                                match.data()["matchNum"].toString() +
                                 "  Team #" +
-                                scout.documentID.substring(3) +
+                                scout.id.substring(3) +
                                 " " +
-                                scout.data["allance"] +
+                                scout.data()["allance"] +
                                 " alliance",
                             tz.TZDateTime.fromMillisecondsSinceEpoch(
                                     tz.getLocation("America/New_York"),
-                                    match.data["matchPredictedTime"] * 1000)
+                                    match.data()["matchPredictedTime"] * 1000)
                                 .subtract(Duration(minutes: 1)),
                             NotificationDetails(
                                 android: AndroidNotificationDetails(
-                                    "matchIn1Id",
-                                    "1 minute alerts",
-                                    "Alerts that show 1 minute before the predicted time of the match",
+                                    "matchIn1Id", "1 minute alerts",
+                                    channelDescription:
+                                        "Alerts that show 1 minute before the predicted time of the match",
                                     fullScreenIntent: true,
                                     category: "Robotics",
                                     priority: Priority.high)),
@@ -284,9 +272,9 @@ class MainPageState extends State<MainPage> {
                       tz.TZDateTime.now(tz.local).add(Duration(seconds: 1)),
                       NotificationDetails(
                           android: AndroidNotificationDetails(
-                              "testsId",
-                              "Other",
-                              "Other notifications such as ones to inform you that notifcations have been created.",
+                              "testsId", "Other",
+                              channelDescription:
+                                  "Other notifications such as ones to inform you that notifcations have been created.",
                               fullScreenIntent: true,
                               category: "Robotics",
                               priority: Priority.high)),

@@ -2,34 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'main.dart';
 
-Future<File> _getNameFile() async {
-  // get the path to the document directory.
-
-  String dir = (await getApplicationDocumentsDirectory()).path;
-  print(dir);
-  File currentFile = File('$dir/Name.txt');
-  print(currentFile);
-
-  File newFile = await currentFile.create();
-  return newFile;
-}
-
 class TeleOpMatchScoutState extends State<TeleOpMatchScout> {
   Future<List<int>> getTeamClosestTimeTeam() async {
-    File file = await _getNameFile();
-    String name = file.readAsStringSync();
+    String name = (await SharedPreferences.getInstance()).getString("name");
+
     print(name);
     DateTime currentTime = new DateTime.now();
-    var matchesPlace = await Firestore.instance
+    var matchesPlace = await FirebaseFirestore.instance
         .collection("matches")
         .orderBy("matchNum")
-        .getDocuments();
-    for (DocumentSnapshot match in matchesPlace.documents) {
-      var teams = await match.reference.collection("teams").getDocuments();
-      for (DocumentSnapshot team in teams.documents) {
+        .get();
+    for (DocumentSnapshot match in matchesPlace.docs) {
+      var teams = await match.reference.collection("teams").get();
+      for (DocumentSnapshot team in teams.docs) {
         // var matchTime =
 
         //if(team["scouter"]==name && (match["matchPredictedTime"]*1000)>currentTime.millisecondsSinceEpoch){
@@ -41,12 +30,12 @@ class TeleOpMatchScoutState extends State<TeleOpMatchScout> {
                   match["matchPredictedTime"] * 1000)
               .toLocal());
           print(DateTime.now());
-          print(team.documentID);
-          print(match.documentID);
+          print(team.id);
+          print(match.id);
           print("\n");
           List<int> toReturn = [
-            int.parse(team.documentID.substring(3)),
-            int.parse(match.documentID)
+            int.parse(team.id.substring(3)),
+            int.parse(match.id)
           ];
           return toReturn;
         }

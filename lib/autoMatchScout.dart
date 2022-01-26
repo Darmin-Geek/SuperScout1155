@@ -2,19 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'main.dart';
-
-Future<File> _getNameFile() async {
-  // get the path to the document directory.
-  String dir = (await getApplicationDocumentsDirectory()).path;
-  print(dir);
-  File currentFile = File('$dir/Name.txt');
-  print(currentFile);
-
-  File newFile = await currentFile.create();
-  return newFile;
-}
 
 class AutoMatchScoutState extends State<AutoMatchScout> {
   List<Widget> pageList = [];
@@ -147,23 +137,20 @@ class AutoMatchScoutState extends State<AutoMatchScout> {
   }
 
   Future<List<int>> getTeamClosestTimeTeam() async {
-    //get the file which stores the user's name
-    File file = await _getNameFile();
-    //read the file
-    String name = file.readAsStringSync();
+    String name = (await SharedPreferences.getInstance()).getString("name");
 
     //get the time now
     DateTime currentTime = new DateTime.now();
 
     //get all documents (matches) ordered by their match number
-    var matchesPlace = await Firestore.instance
+    var matchesPlace = await FirebaseFirestore.instance
         .collection("matches")
         .orderBy("matchNum")
-        .getDocuments();
-    for (DocumentSnapshot match in matchesPlace.documents) {
+        .get();
+    for (DocumentSnapshot match in matchesPlace.docs) {
       //get all documents (teams) in order on database
-      var teams = await match.reference.collection("teams").getDocuments();
-      for (DocumentSnapshot team in teams.documents) {
+      var teams = await match.reference.collection("teams").get();
+      for (DocumentSnapshot team in teams.docs) {
         DateTime dataMatchTime = DateTime.fromMillisecondsSinceEpoch(
                 match["matchPredictedTime"] * 1000)
             .toLocal();
@@ -171,8 +158,8 @@ class AutoMatchScoutState extends State<AutoMatchScout> {
         if (team["scouter"] == name && currentTime.isBefore(dataMatchTime)) {
           //get the team number and name
           List<int> toReturn = [
-            int.parse(team.documentID.substring(3)),
-            int.parse(match.documentID)
+            int.parse(team.id.substring(3)),
+            int.parse(match.id)
           ];
           //because the matches are iterated in order, the first one that works is the closest match so return its information
           return toReturn;

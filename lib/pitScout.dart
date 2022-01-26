@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'main.dart';
 
@@ -11,17 +12,6 @@ Future<File> _getUploadCountFile() async {
   String dir = (await getApplicationDocumentsDirectory()).path;
   print(dir);
   File currentFile = File('$dir/uploadPhotoCount.txt');
-  print(currentFile);
-
-  File newFile = await currentFile.create();
-  return newFile;
-}
-
-Future<File> _getNameFile() async {
-  // get the path to the document directory.
-  String dir = (await getApplicationDocumentsDirectory()).path;
-  print(dir);
-  File currentFile = File('$dir/Name.txt');
   print(currentFile);
 
   File newFile = await currentFile.create();
@@ -150,19 +140,15 @@ class PitScoutingTeamState extends State<PitScoutingTeamPage>
       onTap: () async {
         print("uploading");
 
-        File nameFile = await _getNameFile();
-
-        String name = nameFile.readAsStringSync();
-
         //widget.allData.putIfAbsent("name", () => [name]);
         // if(widget.allData["name"]==name)
 
-        Firestore.instance
+        FirebaseFirestore.instance
             .collection("teams")
-            .document(widget.teamNumber)
+            .doc(widget.teamNumber)
             .collection("pitScouts")
-            .document(path)
-            .setData({
+            .doc(path)
+            .set({
           "allData": widget.allData,
         });
         print("done");
@@ -307,22 +293,22 @@ class PitScoutingTeamState extends State<PitScoutingTeamPage>
                           await senderUploadCountFile.readAsString();
                       int count = countDocString.length;
 
-                      File senderNameFile = await _getNameFile();
-                      String senderName = await senderNameFile.readAsString();
+                      String senderName =
+                          (await SharedPreferences.getInstance())
+                              .getString("name");
+
                       //Storage refrence is path
-                      StorageReference storageReference = FirebaseStorage
-                          .instance
+                      Reference storageReference = FirebaseStorage.instance
                           .ref()
                           .child(widget.teamNumber)
                           .child(senderName + " " + count.toString())
                           .child("image");
                       //Order an upload and record it
-                      StorageUploadTask storageUploadTask =
+                      UploadTask storageUploadTask =
                           storageReference.putFile(image);
                       String dir =
                           (await getApplicationDocumentsDirectory()).path;
-                      StorageReference referenceOfText = FirebaseStorage
-                          .instance
+                      Reference referenceOfText = FirebaseStorage.instance
                           .ref()
                           .child(widget.teamNumber)
                           .child(senderName + " " + count.toString())
@@ -330,11 +316,11 @@ class PitScoutingTeamState extends State<PitScoutingTeamPage>
                       File descriptionFile = File("$dir/" + count.toString());
                       String descriptionText = description.text;
                       await descriptionFile.writeAsString(descriptionText);
-                      StorageUploadTask sendText =
+                      UploadTask sendText =
                           referenceOfText.putFile(descriptionFile);
                       //wait until the uploads are completed
-                      await storageUploadTask.onComplete;
-                      await sendText.onComplete;
+                      // await storageUploadTask.onComplete;
+                      // await sendText.onComplete;
                       print("File uploaded");
                       senderUploadCountFile.writeAsString(
                           await senderUploadCountFile.readAsString() + "0");

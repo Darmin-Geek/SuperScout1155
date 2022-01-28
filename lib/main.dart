@@ -24,6 +24,9 @@ import 'schedule.dart';
 import 'matchPageSchedule.dart';
 import 'selectionPitScout.dart';
 
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
+
 //goToFunctions take in the context of where they are called and change the page
 
 void Function() goToMainMenu(BuildContext context) {
@@ -98,7 +101,21 @@ void Function() goToDriverRatingMatchScout(BuildContext context, Map inputMap) {
               )));
 }
 
-void main() => runApp(MyApp());
+void main() async {
+  if (kIsWeb) {
+    await Firebase.initializeApp(
+        options: FirebaseOptions.fromMap({
+      "apiKey": "AIzaSyB1eWbM0dizdPIbJnUpDQ7XMz8dohrIrP4",
+      "authDomain": "scouting1155-6723f.firebaseapp.com",
+      "databaseURL": "https://scouting1155-6723f.firebaseio.com",
+      "projectId": "scouting1155-6723f",
+      "storageBucket": "scouting1155-6723f.appspot.com",
+      "messagingSenderId": "32651962504",
+      "appId": "1:32651962504:web:3353e22c9133584056173d"
+    }));
+  }
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.

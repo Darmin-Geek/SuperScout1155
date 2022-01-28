@@ -31,18 +31,26 @@ class PitScoutingTeamState extends State<PitScoutingTeamPage>
   //question lists
   List<String> constructionNumPitScoutQuestions = ["Rate its existence (1-5)"];
   List<String> constructionYesNoPitScoutQuestions = ["Does it exist?"];
+  List<String> constructionTextPitScoutQuestions = [
+    "What is your favorite word?",
+    "What is your name?"
+  ];
 
   List<String> programmingNumPitScoutQuestions = [
     "How many questions are there?"
   ];
   List<String> programmingYesNoPitScoutQuestions = ["Are the questions good?"];
+  List<String> programmingTextPitScoutQuestions = [
+    "What is your favorite programming language?",
+    "What is your name (programming)?"
+  ];
 
   File image;
   bool showImageSubmit = false;
   var pageType = "I";
 
-  List<Widget> createThePage(
-      List<String> qualitiesInt, List<String> qualitiesYesNo, String path) {
+  List<Widget> createThePage(List<String> qualitiesInt,
+      List<String> qualitiesYesNo, qualitiesText, String path) {
     List<Widget> thePageValue = [];
 
     for (int i = 0; i < qualitiesInt.length; i++) {
@@ -59,8 +67,8 @@ class PitScoutingTeamState extends State<PitScoutingTeamPage>
             widget.allData
                 .update(qualitiesInt[i], (dynamic value) => value + 1);
 
-            thePageValue
-                .addAll(createThePage(qualitiesInt, qualitiesYesNo, path));
+            thePageValue.addAll(createThePage(
+                qualitiesInt, qualitiesYesNo, qualitiesText, path));
 
             thePageValue.removeRange(
                 0,
@@ -77,8 +85,8 @@ class PitScoutingTeamState extends State<PitScoutingTeamPage>
             widget.allData
                 .update(qualitiesInt[i], (dynamic value) => value - 1);
 
-            thePageValue
-                .addAll(createThePage(qualitiesInt, qualitiesYesNo, path));
+            thePageValue.addAll(createThePage(
+                qualitiesInt, qualitiesYesNo, qualitiesText, path));
 
             thePageValue.removeRange(
                 0,
@@ -103,8 +111,8 @@ class PitScoutingTeamState extends State<PitScoutingTeamPage>
           onPressed: () {
             widget.allData.update(qualitiesYesNo[i], (dynamic value) => "Yes");
 
-            thePageValue
-                .addAll(createThePage(qualitiesInt, qualitiesYesNo, path));
+            thePageValue.addAll(createThePage(
+                qualitiesInt, qualitiesYesNo, qualitiesText, path));
             print(thePageValue);
             thePageValue.removeRange(
                 0,
@@ -120,8 +128,8 @@ class PitScoutingTeamState extends State<PitScoutingTeamPage>
           onPressed: () {
             widget.allData.update(qualitiesYesNo[i], (dynamic value) => "No");
 
-            thePageValue
-                .addAll(createThePage(qualitiesInt, qualitiesYesNo, path));
+            thePageValue.addAll(createThePage(
+                qualitiesInt, qualitiesYesNo, qualitiesText, path));
 
             thePageValue.removeRange(
                 0,
@@ -135,6 +143,7 @@ class PitScoutingTeamState extends State<PitScoutingTeamPage>
         Text(widget.allData[qualitiesYesNo[i]].toString()),
       ]));
     }
+    // for(int i=0; i<)
     thePageValue.add(InkWell(
       child: Text("Submit"),
       onTap: () async {
@@ -193,13 +202,19 @@ class PitScoutingTeamState extends State<PitScoutingTeamPage>
 
       if (_tabController.index == 1) {
         pageType = "C";
-        conPageList = createThePage(constructionNumPitScoutQuestions,
-            constructionYesNoPitScoutQuestions, "Construction");
+        conPageList = createThePage(
+            constructionNumPitScoutQuestions,
+            constructionYesNoPitScoutQuestions,
+            constructionTextPitScoutQuestions,
+            "Construction");
       }
       if (_tabController.index == 2) {
         pageType = "P";
-        proPageList = createThePage(programmingNumPitScoutQuestions,
-            programmingYesNoPitScoutQuestions, "Programming");
+        proPageList = createThePage(
+            programmingNumPitScoutQuestions,
+            programmingYesNoPitScoutQuestions,
+            programmingTextPitScoutQuestions,
+            "Programming");
       }
       if (_tabController.index == 3) {
         pageType = "photo";
@@ -236,7 +251,7 @@ class PitScoutingTeamState extends State<PitScoutingTeamPage>
               Column(
                 children: <Widget>[
                   Text(
-                      "I can not currently check if a pitscout has been submited\nIf I could, that information would be here")
+                      "I am not currently sure if I can check if a pitscout has been submited\nIf I could, that information would be here")
                 ],
               ),
             if (pageType == "C")
